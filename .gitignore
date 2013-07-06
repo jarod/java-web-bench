@@ -1,0 +1,17 @@
+.metadata/
+.gradle/
+bin/
+.classpath
+.project
+.settings/
+build/
+.svn/
+application.*.conf
+.DS_Store
+genJava.bat
+genJava.bat.bank
+wired-gen/src/main/java/*.java
+.cache
+.idea/
+*.iml
+classes/

@@ -1,0 +1,72 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
+
+subprojects {
+
+	apply plugin: 'java'
+	apply plugin: 'maven'
+	apply plugin: 'eclipse'
+  apply plugin: 'idea'
+  apply plugin: 'application'
+
+	sourceCompatibility = 1.7
+	group = 'bench'
+	version = '0.1.0'
+
+  repositories {
+    mavenCentral()
+  }
+
+	dependencies {
+	  testCompile(
+	    "junit:junit:4.11",
+	    "org.mockito:mockito-all:1.9.5"
+	  )
+	}
+
+  startScripts {
+      doLast {
+          unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""', 
+            'DEFAULT_JVM_OPTS="-Xms512m -Xmx512m -Xmn420m -XX:-UseAdaptiveSizePolicy -XX:SurvivorRatio=10"')
+      }
+  }
+  applicationDistribution.from("webapp") {
+    include("**/**")
+    into "webapp"
+  }
+}
+
+project(':bench-core') {
+mainClassName = ''
+dependencies {
+  compile(
+    'javax.servlet:javax.servlet-api:3.1.0',
+  )
+}
+}
+
+project(':bench-jetty') {
+mainClassName = 'bench.jetty.JettyServer'
+configurations {
+	all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.servlet'
+}
+dependencies {
+  compile(
+    project(':bench-core'),
+    "org.eclipse.jetty:jetty-webapp:9.0.4.v20130625",
+  )
+}
+}
+
+project(':bench-tomcat') {
+mainClassName = 'bench.tomcat.TomcatServer'
+dependencies {
+  compile(
+    project(':bench-core'),
+    "org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.42",
+    "org.apache.tomcat.embed:tomcat-embed-jasper:7.0.42",
+  )
+}
+}
+
